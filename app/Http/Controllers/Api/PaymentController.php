@@ -9,9 +9,16 @@ use App\Models\Payment;
 use Stripe\Stripe;
 use Stripe\PaymentIntent;
 use Stripe\Exception\ApiErrorException;
+use OpenApi\Attributes as OA;
 
 class PaymentController extends Controller
 {
+    #[OA\Post(path: '/api/payments/process', tags: ['Pagos'], summary: 'Procesar pago con Stripe', security: [['bearerAuth' => []]], responses: [
+        new OA\Response(response: 200, description: 'Pago procesado'),
+        new OA\Response(response: 401, description: 'No autenticado'),
+        new OA\Response(response: 402, description: 'Stripe rechazó el pago'),
+        new OA\Response(response: 422, description: 'Datos inválidos'),
+    ])]
     public function pay(ProcessPaymentRequest $request)
     {
         $order = Order::where('id', $request->order_id)
@@ -31,7 +38,7 @@ class PaymentController extends Controller
             $paymentIntent = PaymentIntent::create([
                 'amount' => $amountInCents,
                 'currency' => 'usd',
-                'payment_method' => $request->payment_method_id, // En pruebas puedes enviar "pm_card_visa"
+                'payment_method' => $request->validated('payment_method_id'),
                 'confirm' => true,
                 'automatic_payment_methods' => [
                     'enabled' => true,
@@ -63,10 +70,11 @@ class PaymentController extends Controller
 
         } catch (ApiErrorException $e) {
             $order->update(['status' => 'failed']);
+            report($e);
+
             return response()->json([
                 'success' => false,
                 'message' => 'Error en la pasarela de pago Stripe.',
-                'error'   => $e->getMessage(),
             ], 402);
         }
     }

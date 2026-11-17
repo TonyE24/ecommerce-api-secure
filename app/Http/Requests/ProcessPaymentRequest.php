@@ -25,7 +25,7 @@ class ProcessPaymentRequest extends FormRequest
         return [
             //
             'order_id' => 'required|integer|exists:orders,id',
-            'payment_method' => 'required|string',
+            'payment_method_id' => ['required', 'string', 'max:255'],
         ];
     }
 }

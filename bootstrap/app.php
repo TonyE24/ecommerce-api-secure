@@ -50,4 +50,15 @@ return Application::configure(basePath: dirname(__DIR__))
                 ], 404);
             }
         });
+
+        $exceptions->render(function (Throwable $e, Request $request) {
+            if ($request->is('api/*')) {
+                report($e);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Ocurrió un error interno. Intenta nuevamente.',
+                ], 500);
+            }
+        });
     })->create();
