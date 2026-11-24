@@ -17,8 +17,9 @@ class AuthController extends Controller
         new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
         new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'password123'),
     ])), responses: [
-        new OA\Response(response: 201, description: 'Usuario registrado'),
-        new OA\Response(response: 422, description: 'Datos inválidos'),
+        new OA\Response(response: 201, description: 'Usuario registrado', content: new OA\JsonContent(ref: '#/components/schemas/AuthTokenResponse')),
+        new OA\Response(response: 422, description: 'Datos inválidos', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function register(RegisterRequest $request)
     {
@@ -45,8 +46,10 @@ class AuthController extends Controller
         new OA\Property(property: 'email', type: 'string', format: 'email', example: 'ana@example.com'),
         new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
     ])), responses: [
-        new OA\Response(response: 200, description: 'Token JWT generado'),
-        new OA\Response(response: 401, description: 'Credenciales inválidas'),
+        new OA\Response(response: 200, description: 'Token JWT generado', content: new OA\JsonContent(ref: '#/components/schemas/AuthTokenResponse')),
+        new OA\Response(response: 401, description: 'Credenciales inválidas', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 422, description: 'Datos inválidos', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function login(LoginRequest $request)
     {
@@ -71,8 +74,9 @@ class AuthController extends Controller
     }
 
     #[OA\Get(path: '/api/auth/me', tags: ['Autenticación'], summary: 'Consultar usuario autenticado', security: [['bearerAuth' => []]], responses: [
-        new OA\Response(response: 200, description: 'Usuario autenticado'),
-        new OA\Response(response: 401, description: 'No autenticado'),
+        new OA\Response(response: 200, description: 'Usuario autenticado', content: new OA\JsonContent(ref: '#/components/schemas/CurrentUserResponse')),
+        new OA\Response(response: 401, description: 'No autenticado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function me()
     {
@@ -83,8 +87,9 @@ class AuthController extends Controller
     }
 
     #[OA\Post(path: '/api/auth/logout', tags: ['Autenticación'], summary: 'Invalidar token JWT', security: [['bearerAuth' => []]], responses: [
-        new OA\Response(response: 200, description: 'Sesión cerrada'),
-        new OA\Response(response: 401, description: 'No autenticado'),
+        new OA\Response(response: 200, description: 'Sesión cerrada', content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse')),
+        new OA\Response(response: 401, description: 'No autenticado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function logout()
     {

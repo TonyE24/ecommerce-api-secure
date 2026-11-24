@@ -17,10 +17,13 @@ class PaymentController extends Controller
         new OA\Property(property: 'order_id', type: 'integer', example: 1),
         new OA\Property(property: 'payment_method_id', type: 'string', example: 'pm_card_visa'),
     ])), responses: [
-        new OA\Response(response: 200, description: 'Pago procesado'),
-        new OA\Response(response: 401, description: 'No autenticado'),
-        new OA\Response(response: 402, description: 'Stripe rechazó el pago'),
-        new OA\Response(response: 422, description: 'Datos inválidos'),
+        new OA\Response(response: 200, description: 'Pago procesado', content: new OA\JsonContent(ref: '#/components/schemas/PaymentResponse')),
+        new OA\Response(response: 400, description: 'La orden ya fue pagada', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 401, description: 'No autenticado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 402, description: 'Stripe rechazó el pago', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 404, description: 'Orden no encontrada', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 422, description: 'Datos inválidos', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function pay(ProcessPaymentRequest $request)
     {

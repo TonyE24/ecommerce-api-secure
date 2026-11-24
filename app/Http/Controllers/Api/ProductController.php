@@ -11,7 +11,8 @@ use OpenApi\Attributes as OA;
 class ProductController extends Controller
 {
     #[OA\Get(path: '/api/products', tags: ['Productos'], summary: 'Listar catálogo público', responses: [
-        new OA\Response(response: 200, description: 'Catálogo de productos'),
+        new OA\Response(response: 200, description: 'Catálogo de productos', content: new OA\JsonContent(ref: '#/components/schemas/ProductListResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function index()
     {
@@ -29,9 +30,10 @@ class ProductController extends Controller
         new OA\Property(property: 'price', type: 'number', format: 'float', example: 89.5),
         new OA\Property(property: 'stock', type: 'integer', example: 25),
     ])), responses: [
-        new OA\Response(response: 201, description: 'Producto creado'),
-        new OA\Response(response: 401, description: 'No autenticado'),
-        new OA\Response(response: 422, description: 'Datos inválidos'),
+        new OA\Response(response: 201, description: 'Producto creado', content: new OA\JsonContent(ref: '#/components/schemas/ProductMutationResponse')),
+        new OA\Response(response: 401, description: 'No autenticado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 422, description: 'Datos inválidos', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function store(StoreProductRequest $request)
     {
@@ -47,8 +49,9 @@ class ProductController extends Controller
     #[OA\Get(path: '/api/products/{product}', tags: ['Productos'], summary: 'Consultar producto', parameters: [
         new OA\Parameter(name: 'product', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
     ], responses: [
-        new OA\Response(response: 200, description: 'Producto encontrado'),
-        new OA\Response(response: 404, description: 'Producto no encontrado'),
+        new OA\Response(response: 200, description: 'Producto encontrado', content: new OA\JsonContent(ref: '#/components/schemas/ProductResponse')),
+        new OA\Response(response: 404, description: 'Producto no encontrado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function show(Product $product)
     {
@@ -66,9 +69,11 @@ class ProductController extends Controller
         new OA\Property(property: 'price', type: 'number', format: 'float', example: 89.5),
         new OA\Property(property: 'stock', type: 'integer', example: 25),
     ])), responses: [
-        new OA\Response(response: 200, description: 'Producto actualizado'),
-        new OA\Response(response: 401, description: 'No autenticado'),
-        new OA\Response(response: 422, description: 'Datos inválidos'),
+        new OA\Response(response: 200, description: 'Producto actualizado', content: new OA\JsonContent(ref: '#/components/schemas/ProductMutationResponse')),
+        new OA\Response(response: 401, description: 'No autenticado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 404, description: 'Producto no encontrado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 422, description: 'Datos inválidos', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function update(UpdateProductRequest $request, Product $product)
     {
@@ -84,8 +89,10 @@ class ProductController extends Controller
     #[OA\Delete(path: '/api/products/{product}', tags: ['Productos'], summary: 'Eliminar producto', security: [['bearerAuth' => []]], parameters: [
         new OA\Parameter(name: 'product', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
     ], responses: [
-        new OA\Response(response: 200, description: 'Producto eliminado'),
-        new OA\Response(response: 401, description: 'No autenticado'),
+        new OA\Response(response: 200, description: 'Producto eliminado', content: new OA\JsonContent(ref: '#/components/schemas/MessageResponse')),
+        new OA\Response(response: 401, description: 'No autenticado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 404, description: 'Producto no encontrado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function destroy(Product $product)
     {

@@ -13,8 +13,9 @@ use OpenApi\Attributes as OA;
 class OrderController extends Controller
 {
     #[OA\Get(path: '/api/orders', tags: ['Órdenes'], summary: 'Consultar historial del cliente', security: [['bearerAuth' => []]], responses: [
-        new OA\Response(response: 200, description: 'Historial de órdenes'),
-        new OA\Response(response: 401, description: 'No autenticado'),
+        new OA\Response(response: 200, description: 'Historial de órdenes', content: new OA\JsonContent(ref: '#/components/schemas/OrderListResponse')),
+        new OA\Response(response: 401, description: 'No autenticado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function index()
     {
@@ -32,9 +33,10 @@ class OrderController extends Controller
             new OA\Property(property: 'quantity', type: 'integer', minimum: 1, example: 2),
         ])),
     ])), responses: [
-        new OA\Response(response: 201, description: 'Orden creada'),
-        new OA\Response(response: 401, description: 'No autenticado'),
-        new OA\Response(response: 422, description: 'Stock insuficiente o datos inválidos'),
+        new OA\Response(response: 201, description: 'Orden creada', content: new OA\JsonContent(ref: '#/components/schemas/OrderResponse')),
+        new OA\Response(response: 401, description: 'No autenticado', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 422, description: 'Stock insuficiente o datos inválidos', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
+        new OA\Response(response: 500, description: 'Error interno', content: new OA\JsonContent(ref: '#/components/schemas/ErrorResponse')),
     ])]
     public function store(StoreOrderRequest $request)
     {
