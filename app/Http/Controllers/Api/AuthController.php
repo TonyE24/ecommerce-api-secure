@@ -11,15 +11,20 @@ use OpenApi\Attributes as OA;
 
 class AuthController extends Controller
 {
-    #[OA\Post(path: '/api/auth/register', tags: ['Autenticación'], summary: 'Registrar un cliente', responses: [
+    #[OA\Post(path: '/api/auth/register', tags: ['Autenticación'], summary: 'Registrar un cliente', requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['name', 'email', 'password', 'password_confirmation'], properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'Ana Pérez'),
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'ana@example.com'),
+        new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
+        new OA\Property(property: 'password_confirmation', type: 'string', format: 'password', example: 'password123'),
+    ])), responses: [
         new OA\Response(response: 201, description: 'Usuario registrado'),
         new OA\Response(response: 422, description: 'Datos inválidos'),
     ])]
     public function register(RegisterRequest $request)
     {
         $user = User::create([
-            'name'     => $request->name,
-            'email'    => $request->email,
+            'name' => $request->name,
+            'email' => $request->email,
             'password' => Hash::make($request->password),
         ]);
 
@@ -28,15 +33,18 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Usuario registrado exitosamente.',
-            'data'    => [
-                'user'         => $user,
+            'data' => [
+                'user' => $user,
                 'access_token' => $token,
-                'token_type'   => 'bearer',
+                'token_type' => 'bearer',
             ],
         ], 201);
     }
 
-    #[OA\Post(path: '/api/auth/login', tags: ['Autenticación'], summary: 'Iniciar sesión', responses: [
+    #[OA\Post(path: '/api/auth/login', tags: ['Autenticación'], summary: 'Iniciar sesión', requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['email', 'password'], properties: [
+        new OA\Property(property: 'email', type: 'string', format: 'email', example: 'ana@example.com'),
+        new OA\Property(property: 'password', type: 'string', format: 'password', example: 'password123'),
+    ])), responses: [
         new OA\Response(response: 200, description: 'Token JWT generado'),
         new OA\Response(response: 401, description: 'Credenciales inválidas'),
     ])]
@@ -54,10 +62,10 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Inicio de sesión exitoso.',
-            'data'    => [
-                'user'         => auth('api')->user(),
+            'data' => [
+                'user' => auth('api')->user(),
                 'access_token' => $token,
-                'token_type'   => 'bearer',
+                'token_type' => 'bearer',
             ],
         ]);
     }
@@ -70,7 +78,7 @@ class AuthController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => auth('api')->user(),
+            'data' => auth('api')->user(),
         ]);
     }
 

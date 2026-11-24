@@ -15,14 +15,13 @@ JWT, Stripe y Swagger/OpenAPI.
 
 ```bash
 composer install
-copy .env.example .env
-php artisan key:generate
-php artisan jwt:secret
 ```
 
-Configura en `.env` `DB_*`, `STRIPE_KEY` y `STRIPE_SECRET`. Después ejecuta:
+Copia `.env.example` como `.env` (en PowerShell: `Copy-Item .env.example .env`) y configura las credenciales de MySQL y las claves de prueba de Stripe. Luego ejecuta:
 
 ```bash
+php artisan key:generate
+php artisan jwt:secret
 php artisan migrate --seed
 php artisan l5-swagger:generate
 php artisan serve
@@ -50,13 +49,22 @@ Authorization: Bearer <token>
 | POST | `/api/auth/logout` | JWT |
 | GET | `/api/products` | Público |
 | GET | `/api/products/{id}` | Público |
-| POST/PUT/DELETE | `/api/products` | JWT |
+| POST | `/api/products` | JWT |
+| PUT, DELETE | `/api/products/{id}` | JWT |
 | GET/POST | `/api/orders` | JWT |
 | POST | `/api/payments/process` | JWT |
 
-Para crear una orden envía `items` como una lista de objetos
-`{ "product_id": 1, "quantity": 2 }`. Para pagarla envía `order_id` y
-`payment_method_id`; en Stripe test puede usarse `pm_card_visa`.
+Para crear una orden envía `items` como una lista de objetos:
+
+```json
+{
+  "items": [
+    { "product_id": 1, "quantity": 2 }
+  ]
+}
+```
+
+Para pagarla, envía `order_id` y `payment_method_id`. En modo de pruebas de Stripe puede usarse `pm_card_visa`; no envíes datos reales de tarjetas a esta API.
 
 ## Seguridad y errores
 

@@ -23,7 +23,6 @@ class ProcessPaymentRequest extends FormRequest
     public function rules(): array
     {
         return [
-            //
             'order_id' => 'required|integer|exists:orders,id',
             'payment_method_id' => ['required', 'string', 'max:255'],
         ];

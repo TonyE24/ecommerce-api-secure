@@ -19,11 +19,16 @@ class ProductController extends Controller
 
         return response()->json([
             'success' => true,
-            'data'    => $products,
+            'data' => $products,
         ]);
     }
 
-    #[OA\Post(path: '/api/products', tags: ['Productos'], summary: 'Crear producto', security: [['bearerAuth' => []]], responses: [
+    #[OA\Post(path: '/api/products', tags: ['Productos'], summary: 'Crear producto', security: [['bearerAuth' => []]], requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['name', 'price', 'stock'], properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'Teclado mecánico'),
+        new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Switches táctiles'),
+        new OA\Property(property: 'price', type: 'number', format: 'float', example: 89.5),
+        new OA\Property(property: 'stock', type: 'integer', example: 25),
+    ])), responses: [
         new OA\Response(response: 201, description: 'Producto creado'),
         new OA\Response(response: 401, description: 'No autenticado'),
         new OA\Response(response: 422, description: 'Datos inválidos'),
@@ -35,7 +40,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Producto creado exitosamente.',
-            'data'    => $product,
+            'data' => $product,
         ], 201);
     }
 
@@ -49,13 +54,18 @@ class ProductController extends Controller
     {
         return response()->json([
             'success' => true,
-            'data'    => $product,
+            'data' => $product,
         ]);
     }
 
     #[OA\Put(path: '/api/products/{product}', tags: ['Productos'], summary: 'Actualizar producto', security: [['bearerAuth' => []]], parameters: [
         new OA\Parameter(name: 'product', in: 'path', required: true, schema: new OA\Schema(type: 'integer')),
-    ], responses: [
+    ], requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(properties: [
+        new OA\Property(property: 'name', type: 'string', example: 'Teclado mecánico'),
+        new OA\Property(property: 'description', type: 'string', nullable: true, example: 'Switches táctiles'),
+        new OA\Property(property: 'price', type: 'number', format: 'float', example: 89.5),
+        new OA\Property(property: 'stock', type: 'integer', example: 25),
+    ])), responses: [
         new OA\Response(response: 200, description: 'Producto actualizado'),
         new OA\Response(response: 401, description: 'No autenticado'),
         new OA\Response(response: 422, description: 'Datos inválidos'),
@@ -67,7 +77,7 @@ class ProductController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Producto actualizado exitosamente.',
-            'data'    => $product,
+            'data' => $product,
         ]);
     }
 

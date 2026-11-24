@@ -6,14 +6,17 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\ProcessPaymentRequest;
 use App\Models\Order;
 use App\Models\Payment;
-use Stripe\Stripe;
-use Stripe\PaymentIntent;
-use Stripe\Exception\ApiErrorException;
 use OpenApi\Attributes as OA;
+use Stripe\Exception\ApiErrorException;
+use Stripe\PaymentIntent;
+use Stripe\Stripe;
 
 class PaymentController extends Controller
 {
-    #[OA\Post(path: '/api/payments/process', tags: ['Pagos'], summary: 'Procesar pago con Stripe', security: [['bearerAuth' => []]], responses: [
+    #[OA\Post(path: '/api/payments/process', tags: ['Pagos'], summary: 'Procesar pago con Stripe', security: [['bearerAuth' => []]], requestBody: new OA\RequestBody(required: true, content: new OA\JsonContent(required: ['order_id', 'payment_method_id'], properties: [
+        new OA\Property(property: 'order_id', type: 'integer', example: 1),
+        new OA\Property(property: 'payment_method_id', type: 'string', example: 'pm_card_visa'),
+    ])), responses: [
         new OA\Response(response: 200, description: 'Pago procesado'),
         new OA\Response(response: 401, description: 'No autenticado'),
         new OA\Response(response: 402, description: 'Stripe rechazó el pago'),
@@ -46,7 +49,7 @@ class PaymentController extends Controller
                 ],
                 'metadata' => [
                     'order_id' => $order->id,
-                    'user_id'  => auth('api')->id(),
+                    'user_id' => auth('api')->id(),
                 ],
             ]);
 
@@ -65,7 +68,7 @@ class PaymentController extends Controller
             return response()->json([
                 'success' => true,
                 'message' => 'Pago procesado correctamente.',
-                'data'    => $payment,
+                'data' => $payment,
             ]);
 
         } catch (ApiErrorException $e) {
