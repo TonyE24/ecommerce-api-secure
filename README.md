@@ -1,15 +1,16 @@
-# E-commerce Secure API
+# API para tienda online
 
-API RESTful para un e-commerce desarrollada con Laravel 12, PHP 8.2+, MySQL,
-JWT, Stripe y Swagger/OpenAPI.
+API para gestionar productos, órdenes y pagos de una tienda online. Está hecha
+con Laravel 12 y usa JWT para iniciar sesión, Stripe en modo de prueba y Swagger
+para consultar sus endpoints.
 
-## Requisitos
+## Qué necesitas
 
-- PHP 8.2 o superior con extensiones `pdo_mysql`, `openssl` y `mbstring`.
+- PHP 8.2 o superior con `pdo_mysql`, `openssl` y `mbstring`.
 - Composer.
-- MySQL 8+.
-- Node.js y npm (solo para los assets de Laravel).
-- Una cuenta de Stripe en modo prueba.
+- MySQL 8 o superior.
+- Node.js y npm para compilar los assets de Laravel.
+- Una cuenta de Stripe. Para probar, usa sus claves de test.
 
 ## Instalación
 
@@ -17,7 +18,14 @@ JWT, Stripe y Swagger/OpenAPI.
 composer install
 ```
 
-Copia `.env.example` como `.env` (en PowerShell: `Copy-Item .env.example .env`) y configura las credenciales de MySQL y las claves de prueba de Stripe. Luego ejecuta:
+Copia `.env.example` y nómbralo `.env`. En PowerShell puedes hacerlo así:
+
+```powershell
+Copy-Item .env.example .env
+```
+
+En `.env`, agrega los datos de conexión a MySQL y las claves de prueba de
+Stripe. Después corre:
 
 ```bash
 php artisan key:generate
@@ -27,19 +35,19 @@ php artisan l5-swagger:generate
 php artisan serve
 ```
 
-La documentación interactiva está disponible en
-`http://127.0.0.1:8000/api/documentation`.
+La API queda en `http://127.0.0.1:8000`. Puedes probar los endpoints desde
+Swagger en `http://127.0.0.1:8000/api/documentation`.
 
-## Autenticación
+## Iniciar sesión
 
-`POST /api/auth/register` y `POST /api/auth/login` devuelven un JWT. En las
-rutas protegidas envía:
+Regístrate o inicia sesión en `/api/auth/register` o `/api/auth/login`. La
+respuesta incluye un token JWT. En las rutas privadas, envíalo en el header:
 
 ```text
 Authorization: Bearer <token>
 ```
 
-## Endpoints
+## Rutas principales
 
 | Método | Endpoint | Acceso |
 | --- | --- | --- |
@@ -54,7 +62,7 @@ Authorization: Bearer <token>
 | GET/POST | `/api/orders` | JWT |
 | POST | `/api/payments/process` | JWT |
 
-Para crear una orden envía `items` como una lista de objetos:
+Para crear una orden, manda una lista de productos con su cantidad:
 
 ```json
 {
@@ -64,17 +72,18 @@ Para crear una orden envía `items` como una lista de objetos:
 }
 ```
 
-Para pagarla, envía `order_id` y `payment_method_id`. En modo de pruebas de Stripe puede usarse `pm_card_visa`; no envíes datos reales de tarjetas a esta API.
+Después puedes pagarla con su `order_id` y un `payment_method_id`. Para probar
+con Stripe usa `pm_card_visa`. No envíes números de tarjeta a esta API.
 
-## Seguridad y errores
+## Algunas notas
 
-- Las contraseñas se almacenan con hashing de Laravel.
-- Los JWT expiran y se invalidan al cerrar sesión.
-- El total de la orden se calcula en servidor y el stock se bloquea dentro de
-  una transacción.
-- Las respuestas de validación, autenticación y recursos inexistentes usan JSON
-  con `success`, `message` y, cuando aplica, `errors`.
-- No se guardan claves secretas en el repositorio; usa `.env`.
+- Laravel guarda las contraseñas con hashing. Los tokens JWT caducan y se
+  invalidan al cerrar sesión.
+- El servidor calcula el total y actualiza el stock dentro de una transacción.
+- Los errores de la API se devuelven en JSON. Los de validación incluyen los
+  campos que hay que corregir.
+- No subas tu `.env` a GitHub. Ahí van tus claves; `.env.example` solo sirve
+  como plantilla.
 
 ## Pruebas
 
@@ -82,4 +91,4 @@ Para pagarla, envía `order_id` y `payment_method_id`. En modo de pruebas de Str
 php artisan test
 ```
 
-Los productos de ejemplo se cargan mediante `ProductSeeder`.
+Para cargar los productos de ejemplo, ejecuta `php artisan db:seed`.
